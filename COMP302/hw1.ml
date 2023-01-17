@@ -1,9 +1,9 @@
 (* Question 1: Manhattan Distance *)
 (* TODO: Write a good set of tests for distance. *)
-let distance_tests = [ (3,4);(3,4) 
-    (* Your test cases go here *)
+let distance_tests = [  (((3,4), (3, 4)), 0); (((50, 21), (-79, -82)), 232); (((28, 7), (-34, 12)), 67);
+                        (((5, 3), (6, 9)), 7); (((6, 9), (5, 3)), 7); (((3, 0), (0, 4)), 7)
                      ]
-;;
+                     
 
 (* TODO: Correct this implementation so that it compiles and returns
          the correct answers.
@@ -21,7 +21,7 @@ let distance (x1, y1) (x2, y2) =
 *)
 let binomial_tests = [
   (* Your test cases go here. Correct the incorrect test cases for the function. *)
-  ((0, 0), 1); ((10, 4), 210); ((10, 4), 210); ((5, 3), 10); ((16, 4), 1820)
+  ((0, 0), 1); ((10, 4), 210); ((10, 4), 210); ((5, 3), 10); ((8, 8), 1)
 
 ]
 
@@ -35,9 +35,6 @@ let binomial n k =
     in
     (factorial n) / ((factorial k) *  factorial (n-k)) 
                     
-let rec factorial i = 
-  if i <= 1 then 1 else (factorial (i - 1) * i)
-                        
 
 (* Question 3: Lucas Numbers *)
 
@@ -47,9 +44,8 @@ let lucas_tests = [
 
 (* TODO: Implement a tail-recursive helper lucas_helper. *)
 let rec lucas_helper acc1 acc2 =
-  
+  raise NotImplemented
 
-
-(* TODO: Implement lucas that calls the previous function. *)
-  let lucas n =
-    raise NotImplemented
+(* TODO: Implement lucas that calls the previous function. *) 
+let lucas n =
+  raise NotImplemented
