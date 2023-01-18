@@ -1,7 +1,8 @@
 (* Question 1: Manhattan Distance *)
 (* TODO: Write a good set of tests for distance. *)
-let distance_tests = [  (((3,4), (3, 4)), 0); (((50, 21), (-79, -82)), 232); (((28, 7), (-34, 12)), 67);
-                        (((5, 3), (6, 9)), 7); (((6, 9), (5, 3)), 7); (((3, 0), (0, 4)), 7)
+let distance_tests = [  (((3,4), (3, 4)), 0); (((50, 21), (-79, -82)), 232); 
+                        (((28, 7), (-34, 12)), 67); (((5, 3), (6, 9)), 7); 
+                        (((6, 9), (5, 3)), 7); (((-17, 17), (0, 0)), 34)
                      ]
                      
 
@@ -43,9 +44,11 @@ let lucas_tests = [
 ]
 
 (* TODO: Implement a tail-recursive helper lucas_helper. *)
-let rec lucas_helper acc1 acc2 =
-  raise NotImplemented
-
+let rec lucas_helper n acc1 acc2 =
+  if n = 0 then acc2
+  else if n = 1 then acc1
+  else 
+    lucas_helper (n-1) (acc1 + acc2) acc1
 (* TODO: Implement lucas that calls the previous function. *) 
 let lucas n =
-  raise NotImplemented
+  lucas_helper n 1 2
