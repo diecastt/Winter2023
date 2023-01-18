@@ -2,7 +2,8 @@
 (* TODO: Write a good set of tests for distance. *)
 let distance_tests = [  (((3,4), (3, 4)), 0); (((50, 21), (-79, -82)), 232); 
                         (((28, 7), (-34, 12)), 67); (((5, 3), (6, 9)), 7); 
-                        (((6, 9), (5, 3)), 7); (((-17, 17), (0, 0)), 34)
+                        (((6, 9), (5, 3)), 7); (((-17, 17), (0, 0)), 34);
+                        (((-12, -23), (-5, -9)), 21)
                      ]
                      
 
@@ -22,7 +23,8 @@ let distance (x1, y1) (x2, y2) =
 *)
 let binomial_tests = [
   (* Your test cases go here. Correct the incorrect test cases for the function. *)
-  ((0, 0), 1); ((10, 4), 210); ((10, 4), 210); ((5, 3), 10); ((8, 8), 1)
+  ((0, 0), 1); ((10, 4), 210); ((10, 4), 210); ((5, 3), 10); ((8, 8), 1);
+  ((1, 0), 1); 
 
 ]
 
@@ -30,7 +32,8 @@ let binomial_tests = [
          the correct answers.
 *)
 let binomial n k =
-  if n = k then 1 else  
+  if n = k then 1
+  else  
     let rec factorial i = 
       if i <= 1 then 1 else (factorial (i - 1) * i)
     in
@@ -41,6 +44,10 @@ let binomial n k =
 
 (* TODO: Write a good set of tests for lucas_tests. *)
 let lucas_tests = [
+  (12, 322);
+  (0, 2);
+  (1, 1);
+  (2, 3)
 ]
 
 (* TODO: Implement a tail-recursive helper lucas_helper. *)
@@ -51,4 +58,4 @@ let rec lucas_helper n acc1 acc2 =
     lucas_helper (n-1) (acc1 + acc2) acc1
 (* TODO: Implement lucas that calls the previous function. *) 
 let lucas n =
-  lucas_helper n 1 2
+  lucas_helper n 1 2 
