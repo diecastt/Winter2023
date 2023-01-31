@@ -13,6 +13,9 @@ let five : 'b church = fun s z -> s (s (s (s (s z))))
 (* Question 1a: Church numeral to integer *)
 (* TODO: Test cases *)
 let to_int_tests : (int church * int) list = [
+  (five, 5);
+  (zero, 0);
+  (one, 1);
 ]
 ;;
 
@@ -20,40 +23,55 @@ let to_int_tests : (int church * int) list = [
    Although the input n is of type int church, please do not be confused. This is due to typechecking reasons, and for
    your purposes, you could pretend n is of type 'b church just like in the other problems.
 *)
-let to_int (n : int church) : int = let inc n = n + 1 in n inc 0
+let to_int (n : int church) : int = n (fun x -> x + 1) 0
+
 
 (* Question 1b: Add two church numerals *)
 (* TODO: Test cases *)
 let add_tests : ( ('b church * 'b church) * 'b church) list = [
+  ((zero, five), five);
+  ((five, one), fun s z -> s (five s z));
+  ((five, five), fun s z -> s (s (s (s (s (five s z))))) )
+  
 ]
 ;;
 
-let add (n1 : 'b church) (n2 : 'b church) : 'b church =  n1 (fun f x -> f (n2 f x))
-
+let add (n1 : 'b church) (n2 : 'b church) : 'b church = fun s z -> n1 s (n2 s z)
+    
 (* Question 1c: Multiply two church numerals *)
 (* TODO: Test cases *)
 let mult_tests : ( ('b church * 'b church) * 'b church) list = [
+  ((zero, five), zero);
+  ((five, one), five);
+  ((five, (fun s z -> s (one s z))), add five five)
+  
 ]
 ;;
 
-let mult (n1 : 'b church) (n2 : 'b church) : 'b church =
-  raise NotImplemented
-
+let mult (n1 : 'b church) (n2 : 'b church) : 'b church = fun s z -> n1 (n2 s) z
 (* Question 2a: Determine if a church numeral is even *)
 (* TODO: Test cases *)
 let is_even_tests : ('b church * bool) list = [
+  (zero, true);
+  (one, false);
+  ((fun s z -> s (one s z)), true);
+  (five, false)
 ]
 ;;
 
-let is_even (n : 'b church) : bool =
-  raise NotImplemented
+let is_even (n : 'b church) : bool = 
+  n not true
 
 (* Question 2b: Generate a list whose length is given by a church numeral with one element over and over *)
 (* TODO: Test cases;
  * You only need to test lists of int here. *)
 let gen_list_tests : (('b church * int) * int list) list = [
+  ((five, 2), [2;2;2;2;2]);
+  ((zero, 4), []);
+  ((one, 39), [39]);
+  (((add five five), 3), [3;3;3;3;3;3;3;3;3;3])
 ]
 ;;
 
 let gen_list (n : 'b church) (x : 'a) : 'a list =
-  raise NotImplemented 
+  n (fun z -> z @ [x]) []
