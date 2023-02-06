@@ -26,44 +26,62 @@ public class Open_Addressing {
          
      }
      
-                 /** Calculate 2^w*/
+     /** Calculate 2^w*/
      public static int power2(int w) {
          return (int) Math.pow(2, w);
      }
      public static int generateRandom(int min, int max, int seed) {     
          Random generator = new Random(); 
-                 if(seed>=0){
-                    generator.setSeed(seed);
-                 }
+         if(seed>=0){
+            generator.setSeed(seed);
+         }
          int i = generator.nextInt(max-min-1);
          return i+min+1;
      }
-        /**Implements the hash function g(k)*/
-        public int probe(int key, int i) {
-            //TODO: implement this function and change the return statement.
-        return -1;
+     /**Implements the hash function g(k)*/
+     public int probe(int key, int i) {
+         int h = ((this.A * key) % power2(this.w)) >> (this.w - this.r);
+         int hashValue = (h + i) % power2(this.r);
+         return hashValue;
      }
      
      
      /**Inserts key k into hash table. Returns the number of collisions encountered*/
-        public int insertKey(int key){
-            //TODO : implement this and change the return statement.
-            return -1;  
-        }
-        
-        /**Sequentially inserts a list of keys into the HashTable. Outputs total number of collisions */
-        public int insertKeyArray (int[] keyArray){
-            int collision = 0;
-            for (int key: keyArray) {
-                collision += insertKey(key);
-            }
-            return collision;
-        }
-            
-         /**Removes key k from the hash table. Returns the number of collisions encountered*/
-        public int removeKey(int key){
-            //TODO: implement this and change the return statement
-                
-            return -1;
-        }
+     public int insertKey(int key){
+         int collisions = 0;
+
+         while (collisions < this.m){
+             if (this.Table[this.probe(key, collisions)] == -1){
+                 this.Table[this.probe(key, collisions)] = key;
+                 break;
+             }
+             collisions++;
+         }
+         return collisions;
+     }
+
+     /**Sequentially inserts a list of keys into the HashTable. Outputs total number of collisions */
+     public int insertKeyArray (int[] keyArray){
+         int collision = 0;
+         for (int key: keyArray) {
+             collision += insertKey(key);
+         }
+         return collision;
+     }
+
+     /**Removes key k from the hash table. Returns the number of collisions encountered*/
+     public int removeKey(int key){
+         int visited = 0;
+         while (visited < this.m){
+             if (this.Table[this.probe(key, visited)] == -1){
+                 return visited;
+             }
+             else if (this.Table[this.probe(key, visited)] == key) {
+                 this.Table[this.probe(key, visited)] = -1;
+                 return visited;
+             }
+             visited++;
+         }
+         return visited;
+     }
 }

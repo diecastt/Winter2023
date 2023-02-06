@@ -54,42 +54,56 @@ public class DisjointSets {
     
     /* find resentative of element i */
     public int find(int i) {
-
-        /* Fill this method (The statement return 0 is here only to compile) */
-        return 0;
-        
+        if (this.par[i] == i){
+            return i;
+        }
+        else{
+            this.par[i] = find(this.par[i]);
+        }
+        return this.par[i];
     }
 
     /* merge sets containing elements i and j */
     public int union(int i, int j) {
-    
-        /* Fill this method (The statement return 0 is here only to compile) */
-        return 0;
-        
+        int rep = find(i);
+
+        if (par[i] != par[j]){
+            if (this.rank[find(i)] <= this.rank[find(j)]) {
+                this.par[find(i)] = find(j);
+                this.rank[find(j)]++;
+                return find(j);
+            }
+            else{
+                this.par[find(j)] = find(i);
+                this.rank[find(i)]++;
+                rep = find(i);
+            }
+        }
+        return rep;
     }
     
     public static void main(String[] args) {
         
         DisjointSets myset = new DisjointSets(6);
-        System.out.println(myset);
+        System.out.println(myset + Arrays.toString(myset.par) + Arrays.toString(myset.rank));
         System.out.println("-> Union 2 and 3");
         myset.union(2,3);
-        System.out.println(myset);
+        System.out.println(myset + Arrays.toString(myset.par) + Arrays.toString(myset.rank));
         System.out.println("-> Union 2 and 3");
         myset.union(2,3);
-        System.out.println(myset);
+        System.out.println(myset + Arrays.toString(myset.par) + Arrays.toString(myset.rank));
         System.out.println("-> Union 2 and 1");
         myset.union(2,1);
-        System.out.println(myset);
+        System.out.println(myset + Arrays.toString(myset.par) + Arrays.toString(myset.rank));
         System.out.println("-> Union 4 and 5");
         myset.union(4,5);
-        System.out.println(myset);
+        System.out.println(myset + Arrays.toString(myset.par) + Arrays.toString(myset.rank));
         System.out.println("-> Union 3 and 1");
         myset.union(3,1);
-        System.out.println(myset);
+        System.out.println(myset + Arrays.toString(myset.par) + Arrays.toString(myset.rank));
         System.out.println("-> Union 2 and 4");
         myset.union(2,4);
-        System.out.println(myset);
+        System.out.println(myset + Arrays.toString(myset.par) + Arrays.toString(myset.rank));
         
     }
 
