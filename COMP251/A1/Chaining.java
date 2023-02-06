@@ -41,24 +41,19 @@ public class Chaining {
     }
 
 
-
-
     /**Implements the hash function h(k)*/
     public int chain (int key) {
-        // TODO: implement this and change the return statement
-        return -1;
+        return ((this.A * key) % power2(this.w)) >> (this.w - this.r);
     }
-        
-    
+
     /**Inserts key k into hash table. Returns the number of collisions encountered*/
     public int insertKey(int key){
-        //TODO: implement this and change the return statement
-        return -1;
-
+        ArrayList slot = this.Table.get(this.chain(key));
+        int collisions = slot.size();
+        slot.add(key);
+        return collisions;
     }
 
-    
-    
     /**Sequentially inserts a list of keys into the HashTable. Outputs total number of collisions */
     public int insertKeyArray (int[] keyArray){
         int collision = 0;
