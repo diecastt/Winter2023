@@ -40,13 +40,22 @@ let eval_failure_tests : ((truth_assignment * formula) * exn) list = []
 
 (* TODO: Implement the function. *)
 let rec eval (state : truth_assignment) (formula : formula) : bool =
-  
-
+  let table_lookup var (table : truth_assignment) =
+    match (Variable_map.find_opt var table) with
+    | None -> raise (Unassigned_variable var)
+    | Some x -> x
+  in
+  match formula with 
+  | Variable x -> table_lookup x state
+  | Negation x -> not (eval state x)
+  | Disjunction (l, r) -> let fx = eval state l in let gy = eval state r in fx || gy
+  | Conjunction (l, r) -> let fx = eval state l in let gy = eval state r in fx && gy
 (** Question 3 *)
 
 (* TODO: Add test cases. *)
-  let find_satisfying_assignment_tests : (formula * truth_assignment option) list = []
+let find_satisfying_assignment_tests : (formula * truth_assignment option) list = []
 
 (* TODO: Implement the function. *)
 let find_satisfying_assignment (formula : formula) : truth_assignment =
   raise Not_implemented
+
