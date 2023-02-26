@@ -51,7 +51,7 @@ public class Open_Addressing {
          int collisions = 0;
 
          while (collisions < this.m){
-             if (this.Table[this.probe(key, collisions)] == -1 || this.Table[this.probe(key, collisions)] == -2){
+             if (this.Table[this.probe(key, collisions)] == -1){
                  this.Table[this.probe(key, collisions)] = key;
                  break;
              }
@@ -74,16 +74,14 @@ public class Open_Addressing {
          int visited = 0;
          while (visited < this.m){
              if (this.Table[this.probe(key, visited)] == -1){
-                 return visited + 1;
+                 return visited;
              }
              else if (this.Table[this.probe(key, visited)] == key) {
-                 this.Table[this.probe(key, visited)] = -2;
-                 return visited + 1;
+                 this.Table[this.probe(key, visited)] = -1;
+                 return visited;
              }
              visited++;
          }
          return visited;
      }
-
 }
-
