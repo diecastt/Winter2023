@@ -13,7 +13,7 @@ public class HashMap {
         this.m = m;
 
         if (A==-1){
-            this.A = generateRandom((int) power2(3),(int) power2(m-1), seed);
+            this.A = generateRandom((int) m,(int) m * power2(6), seed);
         }
         else{
             this.A = A;
@@ -23,7 +23,6 @@ public class HashMap {
         for (int i = 0; i < m; i++){
             table[i] = null;
         }
-        System.out.println(this.A);
 
     }
 
