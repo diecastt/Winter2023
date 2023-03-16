@@ -40,7 +40,7 @@ public class Open_Addressing {
      }
      /**Implements the hash function g(k)*/
      public int probe(int key, int i) {
-         int h = ((this.A * key) % power2(this.w)) >> (this.w - this.r);
+         int h = ((this.A * key) % power2(this.w));
          int hashValue = (h + i) % power2(this.r);
          return hashValue;
      }

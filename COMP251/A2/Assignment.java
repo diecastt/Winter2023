@@ -18,10 +18,14 @@ class Assignment implements Comparator<Assignment>{
 	 * This method is used to sort to compare assignment objects for sorting. 
 	 */
 	@Override
-	public int compare(Assignment a1, Assignment a2) {
-		// TODO Implement this
-		
-		
+	public int compare(Assignment a1, Assignment a2){
+		//compare by weight
+		if (a1.weight - a2.weight > 0){
+			return -1;
+		}
+		else if (a1.weight - a2.weight < 0) {
+			return 1;
+		}
 		return 0;
 	}
 }

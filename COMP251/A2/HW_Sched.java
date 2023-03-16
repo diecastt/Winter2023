@@ -23,21 +23,29 @@ public class HW_Sched {
 	 * that will be done at time i.
 	 */
 	public int[] SelectAssignments() {
-		//TODO Implement this
+		// TODO Implement this
 		
-		//Sort assignments
-		//Order will depend on how compare function is implemented
+		// Sort assignments
+		// Order will depend on how compare function is implemented
 		Collections.sort(Assignments, new Assignment());
 		
 		// If homeworkPlan[i] has a value -1, it indicates that the 
 		// i'th timeslot in the homeworkPlan is empty
-		//homeworkPlan contains the homework schedule between now and the last deadline
+		// homeworkPlan contains the homework schedule between now and the last deadline
 		int[] homeworkPlan = new int[lastDeadline];
 		for (int i=0; i < homeworkPlan.length; ++i) {
 			homeworkPlan[i] = -1;
 		}
-	
-		
+		for (Assignment a: Assignments) {
+			int latestSlot = -1; // initialize latest possible free slot to -1
+
+			for (int j = Math.min(lastDeadline - 1, a.deadline - 1); j >= 0; j--) {
+				if(homeworkPlan[j] == -1){
+					homeworkPlan[j] = a.number;
+					break;
+				}
+			}
+		}
 		return homeworkPlan;
 	}
 }
