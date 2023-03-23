@@ -12,8 +12,7 @@ let free_test2 =
        Apply (Apply (Var "f", [I 3]),
               [I 4]))
     
-let free_test3 = Rec ("f", Arrow ([Int], Int), Rec ("g", Arrow ([Bool], Bool), 
-                                                    Apply (Var "g", [Var "x"])))
+let free_test3 = Rec ("f", Arrow ([Int], Int), Apply (Var "f", [Var "x"]))
     
 let free_test4 = 
   Apply ((Primop (Times, [I 4])), [I 2; I 4; I 5])
@@ -46,25 +45,54 @@ let rec free_variables : exp -> name list =
   | I _ | B _ -> []
   | If(e, e1, e2) -> union_fvs [e; e1; e2]
   | Primop (_, args) -> union_fvs args
-  | Fn (xs, e) -> (List.map (fun (name, tp) -> name) xs) @ union_fvs [e] 
-  | Rec (x, _, e) -> x :: union_fvs [e]
-  | Let (x, e1, e2) -> x :: union_fvs [e1; e2]
-  | Apply (e, es) -> union_fvs (e :: es)
+  | Fn (xs, e) -> 
+      let (vars, _) = List.split xs in
+      List.filter (fun y -> not (List.mem y vars)) (union_fvs [e])
+  | Rec (x, _, e) -> List.filter (fun y -> x <> y) (union_fvs [e])
+  | Let (x, e1, e2) -> union_fvs [e1] @ List.filter (fun y -> y <> x) (union_fvs [e2]) 
+  | Apply (e, es) -> 
+      union_fvs [e] @ union_fvs es
 
 
 (* TODO: Write a good set of tests for subst. *)
 (* Note: we've added a type annotation here so that the compiler can help
    you write tests of the correct form. *)
-let subst_tests : (((exp * name) * exp) * exp) list = [
-  (* An example test case. If you have trouble writing test cases of the
-     proper form, you can try copying this one and modifying it.
-     Note that you are *only* required to write tests for Rec, Fn, and Apply!
-  *)
-  (((I 1, "x"), (* [1/x] *)
+
+let subs_test1 = (((I 1, "x"), (* [1/x] *)
     (* let y = 2 in y + x *)
-    Let ("y", I 2, Primop (Plus, [Var "y"; Var "x"]))),
+                   Rec ("y", Int , Primop (Plus, [Var "y"; Var "x"]))),
    (* let y = 2 in y + 1 *)
-   Let ("y", I 2, Primop (Plus, [Var "y"; I 1])))
+                  Rec ("y", Int , Primop (Plus, [Var "y"; I 1])))
+                 
+let subs_test2 = (((Var "z", "x"), (* [1/x] *)
+    (* let y = 2 in y + x *)
+                   Apply (Primop (Times, [I 2]), [Primop (Plus, [Var "y"; Var "x"])])),
+   (* let y = 2 in y + 1 *)
+                  Apply (Primop (Times, [I 2]), [Primop (Plus, [Var "y"; Var "z"])]))
+                 
+let subs_test3 = (((Var "z", "y"), (* [1/x] *)
+    (* let y = 2 in y + x *)
+                   ex1),
+   (* let y = 2 in y + 1 *)
+                  Fn ([("x", Int); ("z", Int)],
+                      Primop (Plus,
+                              [Primop (Times, [Var "x"; Var "x"]);
+                               Primop (Times, [Var "z"; Var "z"])])))
+                 
+let subs_test4 = (((I 1, "x"), (* [1/x] *)
+    (* let y = 2 in y + x *)
+                   ex1),
+   (* let y = 2 in y + 1 *)
+                  Fn ([("x", Int); ("y", Int)],
+                      Primop (Plus,
+                              [Primop (Times, [Var "x"; Var "x"]);
+                               Primop (Times, [Var "y"; Var "y"])])))
+let subst_tests : (((exp * name) * exp) * exp) list = [
+  subs_test1;
+  subs_test2;
+  subs_test3;
+  subs_test4
+  
 ]
 
 (* TODO: Implement the missing cases of subst. *)
