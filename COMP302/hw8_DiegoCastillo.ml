@@ -69,24 +69,33 @@ let rec subst ((e', x) as s) exp =
         Let (y, e1', subst s e2)
 
   | Rec (y, t, e) -> 
+      if y = x then
+        Rec (y, t, subst s e)
+      else
+        let (y, e) = 
+          if List.mem y (free_variables e') then
+            rename y e
+          else
+            (y, e)
+        in
+        Rec (y, t, e)
 
   | Fn (xs, e) -> 
-      let vars = List.map (fun (name, tp) -> name) xs in
-      let 
+      let vars = 
 
-        | Apply (e, es) -> raise NotImplemented
+  | Apply (e, es) -> raise NotImplemented
 
-      and rename x e =
-        let x' = freshVar x in
-        (x', subst (Var x', x) e)
+and rename x e =
+  let x' = freshVar x in
+  (x', subst (Var x', x) e)
 
-      and rename_all names exp =
-        List.fold_right
-          (fun name (names, exp) ->
-             let (name', exp') = rename name exp in
-             (name' :: names, exp'))
-          names
-          ([], exp)
+and rename_all names exp =
+  List.fold_right
+    (fun name (names, exp) ->
+       let (name', exp') = rename name exp in
+       (name' :: names, exp'))
+    names
+    ([], exp)
 
 (* Applying a list of substitutions to an expression, leftmost first *)
 let subst_list subs exp =
