@@ -1,10 +1,33 @@
+let free_test1 = Fn ([("x", Int); ("y", Int)], 
+                     Primop (Plus,
+                             [Primop (Times, [Var "x"; Var "c"]);
+                              Primop (Times, [Var "z"; Var "y"])]))
+let free_test2 = 
+  Let ("f",
+       Fn ([("x", Int)],
+           Fn ([("y", Int)],
+               Primop (Plus,
+                       [Primop (Times, [Var "x"; Var "o"]);
+                        Primop (Times, [Var "d"; Var "b"])]))),
+       Apply (Apply (Var "f", [I 3]),
+              [I 4]))
+    
+let free_test3 = Rec ("f", Arrow ([Int], Int), Rec ("g", Arrow ([Bool], Bool), 
+                                                    Apply (Var "g", [Var "x"])))
+    
+let free_test4 = 
+  Apply ((Primop (Times, [I 4])), [I 2; I 4; I 5])
+
 (**To DO: Write a good set of tests for free_variables **)
 let free_variables_tests = [
   (* An example test case.
      Note that you are *only* required to write tests for Let, Rec, Fn, and Apply!
   *)
   (Let ("x", I 1, I 5), []);
-  (ex2, []);
+  (free_test1, ["c" ; "z"]);
+  (free_test2, ["o"; "d"; "b"]);
+  (free_test3, ["x"]);
+  (free_test4, [])
   
 ]
 
@@ -81,9 +104,23 @@ let rec subst ((e', x) as s) exp =
         Rec (y, t, e)
 
   | Fn (xs, e) -> 
-      let vars = 
+      let (vars, types) = List.split xs in
+      let is_present x = List.exists (fun y -> y = x) (free_variables e') in
+      let hasFreeVariable = List.exists is_present vars in
 
-  | Apply (e, es) -> raise NotImplemented
+      if List.mem x vars then
+        Fn (xs, e)
+      else
+        let (xs, e) =
+          if hasFreeVariable then
+            let (new_vars, e) = rename_all vars e in
+            ((List.combine new_vars types), e) 
+          else
+            (xs, subst s e)
+        in
+        Fn (xs, e) 
+          
+  | Apply (e, es) -> Apply (subst s e, List.map (subst s) es)
 
 and rename x e =
   let x' = freshVar x in
