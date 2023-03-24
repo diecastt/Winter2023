@@ -79,20 +79,31 @@ let subs_test3 = (((Var "z", "y"), (* [1/x] *)
                               [Primop (Times, [Var "x"; Var "x"]);
                                Primop (Times, [Var "z"; Var "z"])])))
                  
-let subs_test4 = (((I 1, "x"), (* [1/x] *)
+let subs_test4 = (((I 1, "y"), (* [1/x] *)
     (* let y = 2 in y + x *)
-                   ex1),
+                   Rec ("y", Int , Primop (Plus, [Var "y"; Var "x"]))),
    (* let y = 2 in y + 1 *)
-                  Fn ([("x", Int); ("y", Int)],
-                      Primop (Plus,
-                              [Primop (Times, [Var "x"; Var "x"]);
-                               Primop (Times, [Var "y"; Var "y"])])))
+                  Rec ("y", Int , Primop (Plus, [Var "y"; Var "x"])))
+                 
+let subs_test5 = (((I 1, "y"), (* [1/x] *)
+    (* let y = 2 in y + x *)
+                   Fn ([("x", Int)], Primop (Plus, [Var "y"; Var "x"]))),
+   (* let y = 2 in y + 1 *)
+                  Fn ([("x", Int)], Primop (Plus, [I 1; Var "x"]))) 
+
+let subs_test6 = (((Var "z", "x"), (* [1/x] *)
+    (* let y = 2 in y + x *)
+                   Apply (Primop (Times, [I 2]), [Primop (Times, [I 2])])),
+   (* let y = 2 in y + 1 *)
+                  Apply (Primop (Times, [I 2]), [Primop (Times, [I 2])]))
+                 
 let subst_tests : (((exp * name) * exp) * exp) list = [
   subs_test1;
   subs_test2;
   subs_test3;
-  subs_test4
-  
+  subs_test4;
+  subs_test5;
+  subs_test6
 ]
 
 (* TODO: Implement the missing cases of subst. *)
@@ -136,7 +147,7 @@ let rec subst ((e', x) as s) exp =
       let is_present x = List.exists (fun y -> y = x) (free_variables e') in
       let hasFreeVariable = List.exists is_present vars in
 
-      if List.mem x vars then
+      if List.exists (fun y -> y = x) vars then
         Fn (xs, e)
       else
         let (xs, e) =
