@@ -91,11 +91,11 @@ let subs_test5 = (((I 1, "y"), (* [1/x] *)
    (* let y = 2 in y + 1 *)
                   Fn ([("x", Int)], Primop (Plus, [I 1; Var "x"]))) 
 
-let subs_test6 = (((Var "z", "x"), (* [1/x] *)
-    (* let y = 2 in y + x *)
-                   Apply (Primop (Times, [I 2]), [Primop (Times, [I 2])])),
-   (* let y = 2 in y + 1 *)
-                  Apply (Primop (Times, [I 2]), [Primop (Times, [I 2])]))
+let subs_test6 =  (((Var "f", "x"), (Rec ("f", Int, Var "x"))), (Rec ("f1", Int, Var "f"))) 
+                  
+let subs_test7 =  (((Var "y","x"), (Fn ([("y", Int)], (Var "x")))), (Fn ([("y1", Int)], (Var "y"))))
+                    
+let subs_test8 =  (((I 1, "x"), (Apply (Var "x", [Var "y"; Var "x"]))), (Apply (I 1, [Var "y"; I 1])))
                  
 let subst_tests : (((exp * name) * exp) * exp) list = [
   subs_test1;
@@ -103,7 +103,9 @@ let subst_tests : (((exp * name) * exp) * exp) list = [
   subs_test3;
   subs_test4;
   subs_test5;
-  subs_test6
+  subs_test6;
+  subs_test7;
+  subs_test8
 ]
 
 (* TODO: Implement the missing cases of subst. *)
@@ -132,7 +134,7 @@ let rec subst ((e', x) as s) exp =
 
   | Rec (y, t, e) -> 
       if y = x then
-        Rec (y, t, subst s e)
+        Rec (y, t, e)
       else
         let (y, e) = 
           if List.mem y (free_variables e') then
@@ -140,7 +142,7 @@ let rec subst ((e', x) as s) exp =
           else
             (y, e)
         in
-        Rec (y, t, e)
+        Rec (y, t, subst s e)
 
   | Fn (xs, e) -> 
       let (vars, types) = List.split xs in
@@ -155,9 +157,9 @@ let rec subst ((e', x) as s) exp =
             let (new_vars, e) = rename_all vars e in
             ((List.combine new_vars types), e) 
           else
-            (xs, subst s e)
+            (xs, e)
         in
-        Fn (xs, e) 
+        Fn (xs, subst s e) 
           
   | Apply (e, es) -> Apply (subst s e, List.map (subst s) es)
 
