@@ -1,8 +1,3 @@
-let ctx1 = [("x", Int); ("y", Int)]
-let ctx2 = [("x", Bool); ("y", Bool)]
-let ctx3 = [("a", Int)]
-
-
 (* Write some SUCCESS test cases for `infer` *)
 let infer_tests : ((ctx * exp) * tp) list = [
   (([], Rec ("f", Int, Var "f")), Int);
@@ -61,8 +56,7 @@ let rec infer (ctx : ctx) (e : exp) : tp =
       | Arrow (tps, _) when List.length tps <> List.length types -> raise ArityMismatch
       | Arrow (tps, _) when tps <> types -> raise TypeMismatch
       | Arrow (_, return_tp) -> return_tp 
-      | x -> x
-        
+      | x -> raise TypeMismatch
     )
     
   | Rec (f, t, e') -> if t <> infer ((f, t) :: ctx) e' then raise TypeMismatch
