@@ -5,7 +5,13 @@ let ctx3 = [("a", Int)]
 
 (* Write some SUCCESS test cases for `infer` *)
 let infer_tests : ((ctx * exp) * tp) list = [
-  ((ctx1, Primop (Equals, [Var "x"; Var "y"])), Bool)
+  (([], Rec ("f", Int, Var "f")), Int);
+  (([], Apply (ex1, [I 4; I 7])), Int);
+  (([], Apply (ex2, [])), Bool);
+  (([], Apply (Fn ([("x", Bool)], Var "x"), [B true])), Bool);
+  (([], ex2), Arrow ([], Bool));
+  (([], ex1), Arrow ([Int; Int], Int));
+  (([], Fn ([("x", Bool)], Var "x")), Arrow ([Bool], Bool)); 
 
 ]
 
@@ -55,6 +61,8 @@ let rec infer (ctx : ctx) (e : exp) : tp =
       | Arrow (tps, _) when List.length tps <> List.length types -> raise ArityMismatch
       | Arrow (tps, _) when tps <> types -> raise TypeMismatch
       | Arrow (_, return_tp) -> return_tp 
+      | x -> x
+        
     )
     
   | Rec (f, t, e') -> if t <> infer ((f, t) :: ctx) e' then raise TypeMismatch
