@@ -5,7 +5,7 @@ let ctx3 = [("a", Int)]
 
 (* Write some SUCCESS test cases for `infer` *)
 let infer_tests : ((ctx * exp) * tp) list = [
-  ((ctx1, Primop (Equals, [Var "x"; Var "y"])), Int)
+  ((ctx1, Primop (Equals, [Var "x"; Var "y"])), Bool)
 
 ]
 
@@ -40,12 +40,22 @@ let rec infer (ctx : ctx) (e : exp) : tp =
   match e with
   | I _ -> Int
   | B _ -> Bool
-  | Var x -> if List.assoc_opt ctx = None then raise FreeVariable else List.assoc_opt ctx
+  | Var x -> (match List.assoc_opt x ctx with
+      | None -> raise TypeMismatch
+      | Some t -> t)
   | Primop (op, es) -> infer_op op (List.map (infer ctx) es)
   | If (cond, e1, e2) -> (match ((infer ctx cond), (infer ctx e1), (infer ctx e2)) with
       | Bool, x, y -> x
       | _, _, _ -> raise TypeMismatch)
   | Let (x, e1, e2) -> infer ((x, infer ctx e1) :: ctx) e2
-  | Fn (xs, e') -> infer (ctx @ xs) e'
-  | Apply (e', args) -> raise NotImplemented
-  | Rec (f, t, e') -> raise NotImplemented
+  | Fn (xs, e') -> let _, tps = List.split xs in Arrow (tps, infer (xs @ ctx) e')
+  | Apply (e', args) -> (
+      let types = List.map (infer ctx) args in
+      match infer ctx e' with
+      | Arrow (tps, _) when List.length tps <> List.length types -> raise ArityMismatch
+      | Arrow (tps, _) when tps <> types -> raise TypeMismatch
+      | Arrow (_, return_tp) -> return_tp 
+    )
+    
+  | Rec (f, t, e') -> if t <> infer ((f, t) :: ctx) e' then raise TypeMismatch
+      else infer ((f, t) :: ctx) e'
